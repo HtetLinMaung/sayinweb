@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -9,8 +9,9 @@ body {
   font-size: 13.5px;
   padding: 0;
   margin: 0;
-  font-family: 'Poppins', sans-serif;
-  background-color: #F3F5F7;
+  font-family: "Poppins", sans-serif;
+  /* background-color: #FEF9ED; */
+  background-color: #fff6be;
 }
 
 a {
@@ -20,4 +21,67 @@ a {
 
 * {
   box-sizing: border-box;
+}
+
+body::-webkit-scrollbar {
+  width: 0.25rem;
+}
+
+body::-webkit-scrollbar-track {
+  background: #1e1e24;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--bg-secondary);
+}
+.table td {
+  padding: 6.5px;
+}
+.table th {
+  background-color: #e2e8ed;
+  padding: 6.5px;
+  border-bottom: 2px solid black;
+}
+
+.table tr td:nth-child(odd) {
+  background-color: #f8fafb;
+}
+
+.table tr th:nth-child(1) {
+  background-color: #f1f5fb;
+  text-align: center;
+  max-width: 2rem;
+}
+
+.table tr {
+  transition: all 0.3s;
+  border-bottom: 1px solid #e2e8ed;
+}
+
+.table tr:hover {
+  background-color: #fff2d4;
+}
+
+.table tbody tr:hover th,
+tr:hover td {
+  background-color: #fff2d4 !important;
+}
+
+.table {
+  margin: 0;
+}
+.raised-rounded-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 6px 3px rgba(0, 133, 255,0.2);
+}
+
+svg {
+  transition: all 0.3s;
+}
+svg:hover {
+  transform: translateY(-5px);
+}
+svg:active {
+  transform: translateY(0px);
 }
