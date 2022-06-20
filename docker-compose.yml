@@ -1,0 +1,9 @@
+version: '3.9'
+
+services:
+  sayinweb:
+    image: htetlinmaung/sayinweb
+    build: .
+    ports:
+      - "4041:3000"
+    
