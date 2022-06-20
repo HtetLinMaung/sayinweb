@@ -40,7 +40,7 @@ export default function Order() {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen md:ml-20 m-0">
       <div className="w-2/3 p-10 overflow-auto h-full">
         <div className="mb-5">
           <BreadCrumb

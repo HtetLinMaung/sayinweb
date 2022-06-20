@@ -34,6 +34,9 @@ body::-webkit-scrollbar-track {
 body::-webkit-scrollbar-thumb {
   background: var(--bg-secondary);
 }
+.table {
+  min-width: 1024px;
+}
 .table td {
   padding: 6.5px;
 }
@@ -73,7 +76,7 @@ tr:hover td {
 .raised-rounded-card {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 0 6px 3px rgba(0, 133, 255,0.2);
+  box-shadow: 0 0 6px 3px rgba(0, 133, 255, 0.2);
 }
 
 svg {

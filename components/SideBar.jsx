@@ -5,12 +5,15 @@ export default function SideBar() {
 
   return (
     <nav
-      className=" flex flex-col h-screen raised-rounded-card z-50 flex-shrink-0"
-      style={{ borderRadius: 0, width: 68 }}
+      className="md:w-20 fixed w-screen bottom-0 md:top-0 left-0 flex flex-col md:h-screen raised-rounded-card z-50 flex-shrink-0 overflow-auto"
+      style={{ borderRadius: 0 }}
     >
       <div></div>
-      <ul className="py-16 flex flex-col flex-grow">
-        <li className="flex justify-center mb-10" title="Dashboard">
+      <ul className="md:py-16 px-16 md:px-0 h-20 flex md:flex-col flex-grow">
+        <li
+          className="flex justify-center mr-10 md:mr-0 md:mb-10"
+          title="Dashboard"
+        >
           <svg
             onClick={() => router.push("/sayinweb")}
             style={{
@@ -33,7 +36,10 @@ export default function SideBar() {
             ></path>
           </svg>
         </li>
-        <li className="flex justify-center mb-10" title="Product">
+        <li
+          className="flex justify-center mr-10 md:mr-0 md:mb-10"
+          title="Product"
+        >
           <svg
             onClick={() => router.push("/sayinweb/product")}
             style={{
@@ -57,7 +63,10 @@ export default function SideBar() {
             ></path>
           </svg>
         </li>
-        <li className="flex justify-center mb-10" title="Order">
+        <li
+          className="flex justify-center items-center mr-10 md:mr-0 md:mb-10"
+          title="Order"
+        >
           <svg
             onClick={() => router.push("/sayinweb/order")}
             style={{
@@ -79,7 +88,7 @@ export default function SideBar() {
           </svg>
         </li>
         <li className="flex-grow"></li>
-        <li className="flex justify-center" title="Logout">
+        <li className="flex justify-center items-center" title="Logout">
           <svg
             onClick={() => {
               localStorage.setItem("token", "");

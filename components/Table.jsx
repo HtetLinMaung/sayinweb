@@ -144,12 +144,12 @@ export default function Table({
           </tbody>
         </table>
       </div>
-      <div className="flex justify-end my-5">
-        <div className="mr-4 raised-rounded-card px-5 flex items-center justify-center">
+      <div className="flex flex-wrap justify-end my-5">
+        <div className="mr-0 sm:mr-4 py-2 mb-5 sm:mb-0 w-full sm:w-auto raised-rounded-card px-5 flex items-center justify-center">
           {totalCounts} {countLabel}
           {totalCounts > 1 && "s"}
         </div>
-        <div className="px-4 w-1/6">
+        <div className="mb-5 sm:mb-0 w-full sm:px-4 sm:w-1/3 md:w-1/6 ">
           <div
             className="flex justify-around items-center p-1 raised-rounded-card active:border-blue-400 transition ease-in-out"
             style={{ borderWidth: 1 }}
@@ -260,7 +260,7 @@ export default function Table({
           </div>
         </div>
 
-        <div className="pl-4">
+        <div className="sm:pl-4 w-full sm:w-auto">
           <RaisedCombo
             value={pagination.perpage}
             items={perpages}

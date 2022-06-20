@@ -226,7 +226,7 @@ export default function Product() {
   };
 
   return (
-    <div className="p-10">
+    <div className="p-10 md:ml-20 mb-20 m-0">
       <Modal
         open={open}
         minWidth={280}
@@ -313,12 +313,14 @@ export default function Product() {
           ]}
         />
       </div>
-      <div className="flex mb-5">
+      <div className="flex flex-wrap mb-5">
         <div className="flex-grow"></div>
-        <DownloadButton
-          label="Export"
-          url={`${host}/sayin/products/export?token=${state.token}&search=${search}`}
-        />
+        <div className="w-full sm:w-auto">
+          <DownloadButton
+            label="Export"
+            url={`${host}/sayin/products/export?token=${state.token}&search=${search}`}
+          />
+        </div>
         <div className="px-3">
           <UploadButton
             label="Import"
