@@ -1,6 +1,12 @@
-export default function ProductCard({ image, name, description, price }) {
+export default function ProductCard({
+  image,
+  name,
+  description,
+  price,
+  onClick,
+}) {
   return (
-    <div className="raised-rounded-card p-4">
+    <div className="raised-rounded-card p-4" onClick={onClick}>
       <img
         className="rounded-xl"
         style={{ width: "100%", height: 200 }}

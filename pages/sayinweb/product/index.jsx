@@ -16,6 +16,7 @@ import DownloadButton from "../../../components/DownloadButton";
 import ImageUploader from "../../../components/ImageUploader";
 import TextArea from "../../../components/TextArea";
 import BreadCrumb from "../../../components/BreadCrumb";
+import { useRouter } from "next/router";
 
 const headers = [
   {
@@ -37,6 +38,7 @@ const headers = [
 ];
 
 export default function Product() {
+  const router = useRouter();
   const [state, dispatch] = useContext(appContext);
   const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
@@ -80,7 +82,7 @@ export default function Product() {
       response.data.data.map((d) => ({
         ...d,
         price: money.format(d.price),
-        createdAt: moment(d.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
+        createdAt: moment(d.createdAt).format("DD/MM/YYYY, h:mm:ss a"),
       }))
     );
     setPagination({ ...pagination, pagecount: response.data.pagecount });
