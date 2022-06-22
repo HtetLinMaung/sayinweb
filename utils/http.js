@@ -1,7 +1,7 @@
 import axios from "axios";
 
-// export const host = "http://150.95.82.125:4040";
-export const host = "http://localhost:4040";
+export const host = "http://150.95.82.125:4040";
+// export const host = "http://localhost:4040";
 
 const getAuthHeader = () => ({
   Authorization: `Bearer ${localStorage.getItem("token")}`,
