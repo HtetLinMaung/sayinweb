@@ -127,6 +127,7 @@ export default function Product() {
         name,
         price,
         image,
+        description,
       });
     } else {
       [err, response] = await http.post("/sayin/products", {
@@ -134,6 +135,7 @@ export default function Product() {
         name,
         price,
         image,
+        description,
       });
     }
 
@@ -161,6 +163,7 @@ export default function Product() {
     setName("");
     setPrice("0.00");
     setImage("");
+    setDescription("");
     setIsEdit(false);
   };
 

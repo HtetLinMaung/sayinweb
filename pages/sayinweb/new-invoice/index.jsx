@@ -134,7 +134,7 @@ export default function NewInvoice() {
               onClick={() => addToCart(product)}
               key={product._id}
               {...product}
-              image={`${host}/sayin${product.image}`}
+              image={product.image ? `${host}/sayin${product.image}` : ""}
             />
           ))}
         </div>
