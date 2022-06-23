@@ -9,12 +9,15 @@ import moment from "moment";
 import RaisedInput from "../../../components/RaisedInput";
 import IconButton from "../../../components/IconButton";
 import Button from "../../../components/Button";
+import EditablePrice from "../../../components/EditableText";
 
 export default function NewInvoice() {
   const [state, dispatch] = useContext(appContext);
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [items, setItems] = useState([]);
+  const [discount, setDiscount] = useState(0);
+  const [tax, setTax] = useState(0);
 
   useEffect(() => {
     fetchProducts();
@@ -70,6 +73,12 @@ export default function NewInvoice() {
   };
 
   const handlePrint = async () => {
+    if (!items.length) {
+      return Swal.fire({
+        icon: "error",
+        text: "Please add at least one item to invoice!",
+      });
+    }
     dispatch({ type: "SET_STATE", payload: { loading: true } });
     const [err, response] = await http.post("/sayin/invoices", {
       items: items.map((item) => ({
@@ -78,6 +87,8 @@ export default function NewInvoice() {
         product: item._id,
       })),
       paymentmethod: "Cash",
+      tax,
+      discount,
     });
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
@@ -215,11 +226,23 @@ export default function NewInvoice() {
             </div>
             <div className="flex justify-between mb-3">
               <span style={{ color: "#818384" }}>Discount</span>
-              <span className="font-bold">0 Ks</span>
+              <span className="font-bold flex">
+                <EditablePrice
+                  value={discount}
+                  onChange={(e) => setDiscount(e.target.value)}
+                />
+                <span className="pl-1">Ks</span>
+              </span>
             </div>
             <div className="flex justify-between">
               <span style={{ color: "#818384" }}>Tax</span>
-              <span className="font-bold">0 Ks</span>
+              <span className="font-bold flex">
+                <EditablePrice
+                  value={tax}
+                  onChange={(e) => setTax(e.target.value)}
+                />
+                <span className="pl-1">Ks</span>
+              </span>
             </div>
           </div>
           <div
@@ -227,11 +250,15 @@ export default function NewInvoice() {
             style={{ backgroundColor: "#F5F7FB" }}
           >
             <div className="flex justify-between text-lg">
-              <span style={{ color: "#818384" }}>Total</span>
+              <span style={{ color: "#818384" }}>Nett</span>
               <span className="font-bold">
-                {money.sum(
-                  items.map((item) => money.parseNumber(item.price) * item.qty)
-                )}{" "}
+                {money.sum([
+                  ...items.map(
+                    (item) => money.parseNumber(item.price) * item.qty
+                  ),
+                  `-${discount}`,
+                  tax,
+                ])}{" "}
                 Ks
               </span>
             </div>
