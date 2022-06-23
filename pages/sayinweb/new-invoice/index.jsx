@@ -30,7 +30,9 @@ export default function NewInvoice() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     setProducts(
@@ -82,7 +84,9 @@ export default function NewInvoice() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     setItems([]);

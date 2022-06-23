@@ -20,8 +20,8 @@ export default function RaisedInput({
         onChange={onChange}
         placeholder={placeholder}
         type={type}
-        className="outline-none py-1 px-6 w-full placeholder:text-sm focus:border-blue-400 transition ease-in-out"
-        style={{ ...style, fontSize: 14 }}
+        className="outline-none py-2 px-6 w-full placeholder:text-sm focus:border-blue-400 transition ease-in-out"
+        style={{ ...style, fontSize: 13 }}
       />
       {iconPosition === "right" && <div className="px-4">{children}</div>}
     </div>

@@ -35,10 +35,16 @@ export default function Login() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     localStorage.setItem("token", response.data.data.token);
+    dispatch({
+      type: "SET_STATE",
+      payload: { token: response.data.data.token },
+    });
     router.push("/sayinweb");
   };
 

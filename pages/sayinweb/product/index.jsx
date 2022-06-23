@@ -17,6 +17,7 @@ import ImageUploader from "../../../components/ImageUploader";
 import TextArea from "../../../components/TextArea";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { useRouter } from "next/router";
+import SelectDateButton from "../../../components/SelectDateButton";
 
 const headers = [
   {
@@ -58,6 +59,10 @@ export default function Product() {
   const [search, setSearch] = useState("");
   const [upoloadLoading, setUploadLoading] = useState(false);
   const [downloadLoading, setDownloadLoading] = useState(false);
+  const [dateModal, setDateModal] = useState(false);
+  const [datelabel, setDatelabel] = useState("Select Dates");
+  const [fromdate, setFromdate] = useState("");
+  const [todate, setTodate] = useState("");
 
   useEffect(() => {
     fetchProducts();
@@ -69,13 +74,17 @@ export default function Product() {
     const [err, response] = await http.get("/sayin/products", {
       ...pagination,
       search,
+      fromdate,
+      todate,
     });
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     setProducts(
@@ -133,7 +142,9 @@ export default function Product() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     handleCancel();
@@ -161,7 +172,9 @@ export default function Product() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     setProductId(id);
@@ -196,7 +209,9 @@ export default function Product() {
         return Swal.fire({
           icon: "error",
           text:
-            err.response.data.message || err.message || "Something went wrong!",
+            (err.response.data && err.response.data.message) ||
+            err.message ||
+            "Something went wrong!",
         });
       }
       Swal.fire({
@@ -217,7 +232,9 @@ export default function Product() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     Swal.fire({
@@ -227,8 +244,77 @@ export default function Product() {
     fetchProducts();
   };
 
+  const dateModalClear = () => {
+    setFromdate("");
+    setTodate("");
+  };
+
+  const dateModalOk = () => {
+    if (fromdate && !todate) {
+      setDatelabel(`>= ${moment(fromdate).format("DD/MM/YY")}`);
+    } else if (todate && fromdate) {
+      if (fromdate == todate) {
+        setDatelabel(`${moment(fromdate).format("DD/MM/YY")}`);
+      } else {
+        setDatelabel(
+          `${moment(fromdate).format("DD/MM/YY")} - ${moment(todate).format(
+            "DD/MM/YY"
+          )}`
+        );
+      }
+    } else if (!fromdate && todate) {
+      setDatelabel(`<= ${moment(todate).format("DD/MM/YY")}`);
+    } else {
+      setDatelabel("Select Dates");
+    }
+    setDateModal(false);
+    fetchProducts();
+  };
+
   return (
     <div className="p-10 md:ml-20 mb-20 m-0">
+      {" "}
+      <Modal
+        open={dateModal}
+        minWidth={280}
+        width={350}
+        onOverlayClick={dateModalOk}
+      >
+        <div className="mb-3">
+          <div className="mb-2" style={{ fontSize: 14 }}>
+            From
+          </div>
+          <TextInput
+            py="2"
+            type="date"
+            value={fromdate}
+            onChange={(e) => setFromdate(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <div className="mb-2" style={{ fontSize: 14 }}>
+            To
+          </div>
+          <TextInput
+            py="2"
+            type="date"
+            value={todate}
+            onChange={(e) => setTodate(e.target.value)}
+          />
+        </div>
+        <div className="mt-10 flex justify-around">
+          <div className="w-1/3">
+            <Button block onClick={dateModalClear}>
+              Clear
+            </Button>
+          </div>
+          <div className="w-1/3">
+            <Button block onClick={dateModalOk}>
+              Ok
+            </Button>
+          </div>
+        </div>
+      </Modal>
       <Modal
         open={open}
         minWidth={280}
@@ -332,32 +418,42 @@ export default function Product() {
         </div>
         <Button onClick={() => setOpen(true)}>Add Product</Button>
       </div>
-      <div className="flex mb-5">
-        <RaisedInput
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        >
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            data-prefix="fas"
-            data-icon="search"
-            role="img"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            className="svg-inline--fa fa-search fa-w-16 fa-3x"
-            style={{ width: "1rem" }}
+      <div className="flex mb-5 items-center flex-wrap">
+        <div className="w-full mb-3 md:w-auto md:mb-0">
+          <RaisedInput
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           >
-            <path
-              fill="currentColor"
-              d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
-              className=""
-              style={{ color: "grey" }}
-            ></path>
-          </svg>
-        </RaisedInput>
-        <div className="px-3">
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="search"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              className="svg-inline--fa fa-search fa-w-16 fa-3x"
+              style={{ width: "1rem" }}
+            >
+              <path
+                fill="currentColor"
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+                className=""
+                style={{ color: "grey" }}
+              ></path>
+            </svg>
+          </RaisedInput>
+        </div>
+        <div className="md:ml-3 w-full mb-3 md:w-auto md:mb-0">
+          <SelectDateButton
+            block
+            label={datelabel}
+            onClick={() => setDateModal(true)}
+          />
+        </div>
+
+        <div className="md:mx-3 w-full mb-3 md:w-auto md:mb-0">
           <IconButton>
             <svg
               aria-hidden="true"
@@ -377,6 +473,7 @@ export default function Product() {
             </svg>
           </IconButton>
         </div>
+        <div className="flex-grow"></div>
       </div>
       <Table
         pagination={pagination}

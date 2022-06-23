@@ -12,6 +12,9 @@ import UploadButton from "../../../components/UploadButton";
 import DownloadButton from "../../../components/DownloadButton";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { useRouter } from "next/router";
+import SelectDateButton from "../../../components/SelectDateButton";
+import Modal from "../../../components/Modal";
+import TextInput from "../../../components/TextInput";
 
 const headers = [
   {
@@ -58,6 +61,10 @@ export default function Sale() {
   const [upoloadLoading, setUploadLoading] = useState(false);
   const [totalqty, setTotalqty] = useState(0);
   const [totalamount, setTotalamount] = useState("0.00");
+  const [dateModal, setDateModal] = useState(false);
+  const [datelabel, setDatelabel] = useState("Select Dates");
+  const [fromdate, setFromdate] = useState("");
+  const [todate, setTodate] = useState("");
 
   useEffect(() => {
     if (router.isReady) {
@@ -72,13 +79,17 @@ export default function Sale() {
       ...pagination,
       search,
       invoiceid: "invoiceid" in router.query ? router.query.invoiceid : "",
+      fromdate,
+      todate,
     });
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     setSales(
@@ -95,7 +106,7 @@ export default function Sale() {
 
   const handleImport = async (f) => {
     setUploadLoading(true);
-    const [err, response] = await http.post("/sayin/products/import", {
+    const [err, response] = await http.post("/sayin/sales/import", {
       dataurl: f.dataurl,
     });
     setUploadLoading(false);
@@ -103,18 +114,88 @@ export default function Sale() {
       return Swal.fire({
         icon: "error",
         text:
-          err.response.data.message || err.message || "Something went wrong!",
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
       });
     }
     Swal.fire({
       icon: "success",
       text: response.data.message,
     });
-    fetchProducts();
+    fetchSales();
+  };
+
+  const dateModalClear = () => {
+    setFromdate("");
+    setTodate("");
+  };
+
+  const dateModalOk = () => {
+    if (fromdate && !todate) {
+      setDatelabel(`>= ${moment(fromdate).format("DD/MM/YY")}`);
+    } else if (todate && fromdate) {
+      if (fromdate == todate) {
+        setDatelabel(`${moment(fromdate).format("DD/MM/YY")}`);
+      } else {
+        setDatelabel(
+          `${moment(fromdate).format("DD/MM/YY")} - ${moment(todate).format(
+            "DD/MM/YY"
+          )}`
+        );
+      }
+    } else if (!fromdate && todate) {
+      setDatelabel(`<= ${moment(todate).format("DD/MM/YY")}`);
+    } else {
+      setDatelabel("Select Dates");
+    }
+    setDateModal(false);
+    fetchSales();
   };
 
   return (
     <div className="p-10 md:ml-20 mb-20 m-0">
+      <Modal
+        open={dateModal}
+        minWidth={280}
+        width={350}
+        onOverlayClick={dateModalOk}
+      >
+        <div className="mb-3">
+          <div className="mb-2" style={{ fontSize: 14 }}>
+            From
+          </div>
+          <TextInput
+            py="2"
+            type="date"
+            value={fromdate}
+            onChange={(e) => setFromdate(e.target.value)}
+          />
+        </div>
+        <div className="mb-3">
+          <div className="mb-2" style={{ fontSize: 14 }}>
+            To
+          </div>
+          <TextInput
+            py="2"
+            type="date"
+            value={todate}
+            onChange={(e) => setTodate(e.target.value)}
+          />
+        </div>
+        <div className="mt-10 flex justify-around">
+          <div className="w-1/3">
+            <Button block onClick={dateModalClear}>
+              Clear
+            </Button>
+          </div>
+          <div className="w-1/3">
+            <Button block onClick={dateModalOk}>
+              Ok
+            </Button>
+          </div>
+        </div>
+      </Modal>
       <div className="mb-5">
         <BreadCrumb
           items={
@@ -151,7 +232,11 @@ export default function Sale() {
         <div className="w-full sm:w-auto">
           <DownloadButton
             label="Export"
-            url={`${host}/sayin/products/export?token=${state.token}&search=${search}`}
+            url={`${host}/sayin/sales/export?token=${
+              state.token
+            }&search=${search}&invoiceid=${
+              "invoiceid" in router.query ? router.query.invoiceid : ""
+            }`}
           />
         </div>
         <div className="px-3">
@@ -165,32 +250,42 @@ export default function Sale() {
           New Invoice
         </Button>
       </div>
-      <div className="flex mb-5">
-        <RaisedInput
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        >
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            data-prefix="fas"
-            data-icon="search"
-            role="img"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            className="svg-inline--fa fa-search fa-w-16 fa-3x"
-            style={{ width: "1rem" }}
+      <div className="flex mb-5 items-center flex-wrap">
+        <div className="w-full mb-3 md:w-auto md:mb-0">
+          <RaisedInput
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           >
-            <path
-              fill="currentColor"
-              d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
-              className=""
-              style={{ color: "grey" }}
-            ></path>
-          </svg>
-        </RaisedInput>
-        <div className="px-3">
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              data-prefix="fas"
+              data-icon="search"
+              role="img"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 512 512"
+              className="svg-inline--fa fa-search fa-w-16 fa-3x"
+              style={{ width: "1rem" }}
+            >
+              <path
+                fill="currentColor"
+                d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"
+                className=""
+                style={{ color: "grey" }}
+              ></path>
+            </svg>
+          </RaisedInput>
+        </div>
+        <div className="md:ml-3 w-full mb-3 md:w-auto md:mb-0">
+          <SelectDateButton
+            block
+            label={datelabel}
+            onClick={() => setDateModal(true)}
+          />
+        </div>
+
+        <div className="md:mx-3 w-full mb-3 md:w-auto md:mb-0">
           <IconButton>
             <svg
               aria-hidden="true"
@@ -211,11 +306,11 @@ export default function Sale() {
           </IconButton>
         </div>
         <div className="flex-grow"></div>
-        <div className="raised-rounded-card px-4 py-2 flex">
+        <div className="raised-rounded-card px-4 py-2 flex justify-between w-full mb-3 md:w-auto md:mb-0">
           <div className="mr-2">Qty</div>
           <div className="">{totalqty}</div>
         </div>
-        <div className="raised-rounded-card px-4 py-2 flex ml-5">
+        <div className="raised-rounded-card px-4 py-2 flex md:ml-5 justify-between w-full mb-3 md:w-auto md:mb-0">
           <div className="mr-2">Total</div>
           <div className="">{totalamount}</div>
         </div>
