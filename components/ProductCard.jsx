@@ -4,6 +4,7 @@ export default function ProductCard({
   description,
   price,
   onClick,
+  nettprice,
 }) {
   return (
     <div className="raised-rounded-card p-4 cursor-pointer" onClick={onClick}>
@@ -22,7 +23,7 @@ export default function ProductCard({
         {description}
       </div>
       <div className="text-xl" style={{ color: "#0285FF" }}>
-        {price} Ks
+        {nettprice} Ks
       </div>
     </div>
   );
