@@ -27,6 +27,7 @@ export default function NewInvoice() {
     dispatch({ type: "SET_STATE", payload: { loading: true } });
     const [err, response] = await http.get("/sayin/products", {
       search,
+      sort: "createdAt:desc",
     });
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
