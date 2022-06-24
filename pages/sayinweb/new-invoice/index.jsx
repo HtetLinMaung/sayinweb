@@ -42,6 +42,7 @@ export default function NewInvoice() {
     setProducts(
       response.data.data.map((d) => ({
         ...d,
+        nettprice: money.format(d.price - d.price * (d.discountpercent / 100)),
         price: money.format(d.price),
         createdAt: moment(d.createdAt).format("MMMM Do YYYY, h:mm:ss a"),
       }))
@@ -84,7 +85,6 @@ export default function NewInvoice() {
     const [err, response] = await http.post("/sayin/invoices", {
       items: items.map((item) => ({
         qty: item.qty,
-        price: item.price,
         product: item._id,
       })),
       paymentmethod: "Cash",
@@ -158,7 +158,8 @@ export default function NewInvoice() {
                 <h1 className="font-bold text-lg">{item.name}</h1>
                 <div className="flex justify-between">
                   <div className="" style={{ color: "#0285FF" }}>
-                    {money.format(money.parseNumber(item.price) * item.qty)} Ks
+                    {money.format(money.parseNumber(item.nettprice) * item.qty)}{" "}
+                    Ks
                   </div>
                   <div
                     className="flex items-center justify-between"
@@ -224,7 +225,9 @@ export default function NewInvoice() {
               <span style={{ color: "#818384" }}>Subtotal</span>
               <span className="font-bold">
                 {money.sum(
-                  items.map((item) => money.parseNumber(item.price) * item.qty)
+                  items.map(
+                    (item) => money.parseNumber(item.nettprice) * item.qty
+                  )
                 )}{" "}
                 Ks
               </span>
@@ -259,7 +262,7 @@ export default function NewInvoice() {
               <span className="font-bold">
                 {money.sum([
                   ...items.map(
-                    (item) => money.parseNumber(item.price) * item.qty
+                    (item) => money.parseNumber(item.nettprice) * item.qty
                   ),
                   `-${discount}`,
                   tax,
