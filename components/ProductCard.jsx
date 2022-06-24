@@ -6,7 +6,7 @@ export default function ProductCard({
   onClick,
 }) {
   return (
-    <div className="raised-rounded-card p-4" onClick={onClick}>
+    <div className="raised-rounded-card p-4 cursor-pointer" onClick={onClick}>
       <img
         className="rounded-xl"
         style={{ width: "100%", height: 200 }}

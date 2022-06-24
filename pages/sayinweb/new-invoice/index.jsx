@@ -114,6 +114,10 @@ export default function NewInvoice() {
                 to: "/sayinweb",
               },
               {
+                label: "Invoice",
+                to: "/sayinweb/invoice",
+              },
+              {
                 label: "New Invoice",
                 to: "/sayinweb/new-invoice",
               },

@@ -6,7 +6,7 @@ export default function SelectDateButton({
   return (
     <button
       onClick={onClick}
-      className={`raised-rounded-card px-4 py-2 flex items-center cursor-pointer justify-between ${
+      className={`raised-rounded-card px-4 py-2 flex items-center cursor-pointer justify-between active:scale-90 transition ease-in-out ${
         block ? "w-full" : ""
       }`}
     >

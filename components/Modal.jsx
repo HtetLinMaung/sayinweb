@@ -13,7 +13,7 @@ export default function Modal({
     <div className={className} onClick={onOverlayClick}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-white shadow-lg rounded-2xl p-10 "
+        className="raised-rounded-card rounded-2xl p-10 "
         style={{ minWidth, width }}
       >
         {children}

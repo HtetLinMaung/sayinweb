@@ -18,6 +18,8 @@ import TextArea from "../../../components/TextArea";
 import BreadCrumb from "../../../components/BreadCrumb";
 import { useRouter } from "next/router";
 import SelectDateButton from "../../../components/SelectDateButton";
+import SortButton from "../../../components/SortButton";
+import Checkbox from "../../../components/Checkbox";
 
 const headers = [
   {
@@ -63,6 +65,14 @@ export default function Product() {
   const [datelabel, setDatelabel] = useState("Select Dates");
   const [fromdate, setFromdate] = useState("");
   const [todate, setTodate] = useState("");
+  const [sortModal, setSortModal] = useState(false);
+  const [sortItems, setSortItems] = useState(
+    headers.map((header) => ({
+      ...header,
+      order: header.key == "createdAt" ? "desc" : "asc",
+      checked: header.key == "createdAt" ? true : false,
+    }))
+  );
 
   useEffect(() => {
     fetchProducts();
@@ -76,6 +86,10 @@ export default function Product() {
       search,
       fromdate,
       todate,
+      sort: sortItems
+        .filter((si) => si.checked)
+        .map((si) => `${si.key}:${si.order}`)
+        .join(","),
     });
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
@@ -274,9 +288,67 @@ export default function Product() {
     fetchProducts();
   };
 
+  const sortModalOk = () => {
+    setSortModal(false);
+    fetchProducts();
+  };
+
   return (
     <div className="p-10 md:ml-20 mb-20 m-0">
-      {" "}
+      <Modal
+        open={sortModal}
+        minWidth={280}
+        width={300}
+        onOverlayClick={sortModalOk}
+      >
+        <ul>
+          {sortItems.map((item) => (
+            <li key={item.key} className="flex items-center mb-3">
+              <Checkbox
+                checked={item.checked}
+                onChange={(e) =>
+                  setSortItems(
+                    sortItems.map((si) =>
+                      si.key == item.key ? { ...si, checked: !si.checked } : si
+                    )
+                  )
+                }
+              />
+              <span className="ml-3">{item.title}</span>
+              <div className="flex-grow"></div>
+              <svg
+                onClick={() =>
+                  setSortItems(
+                    sortItems.map((si) =>
+                      si.key == item.key
+                        ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
+                        : si
+                    )
+                  )
+                }
+                aria-hidden="true"
+                focusable="false"
+                data-prefix="fal"
+                data-icon="arrow-down"
+                role="img"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"
+                className="svg-inline--fa fa-arrow-down fa-w-14 fa-3x sort-icon cursor-pointer transition ease-in-out"
+                style={{
+                  width: "0.8rem",
+                  transform:
+                    item.order == "desc" ? "rotate(180deg)" : "rotate(0deg)",
+                }}
+              >
+                <path
+                  fill="currentColor"
+                  d="M443.5 248.5l-7.1-7.1c-4.7-4.7-12.3-4.7-17 0L241 419.9V44c0-6.6-5.4-12-12-12h-10c-6.6 0-12 5.4-12 12v375.9L28.5 241.4c-4.7-4.7-12.3-4.7-17 0l-7.1 7.1c-4.7 4.7-4.7 12.3 0 17l211 211.1c4.7 4.7 12.3 4.7 17 0l211-211.1c4.8-4.8 4.8-12.3.1-17z"
+                ></path>
+              </svg>
+            </li>
+          ))}
+        </ul>
+      </Modal>
       <Modal
         open={dateModal}
         minWidth={280}
@@ -409,7 +481,12 @@ export default function Product() {
         <div className="w-full sm:w-auto">
           <DownloadButton
             label="Export"
-            url={`${host}/sayin/products/export?token=${state.token}&search=${search}`}
+            url={`${host}/sayin/products/export?token=${
+              state.token
+            }&search=${search}&sort=${sortItems
+              .filter((si) => si.checked)
+              .map((si) => `${si.key}:${si.order}`)
+              .join(",")}&fromdate=${fromdate}&todate=${todate}`}
           />
         </div>
         <div className="px-3">
@@ -455,7 +532,9 @@ export default function Product() {
             onClick={() => setDateModal(true)}
           />
         </div>
-
+        <div className="md:ml-3 w-full mb-3 md:w-auto md:mb-0">
+          <SortButton block onClick={() => setSortModal(true)} />
+        </div>
         <div className="md:mx-3 w-full mb-3 md:w-auto md:mb-0">
           <IconButton>
             <svg
