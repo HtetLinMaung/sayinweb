@@ -35,6 +35,18 @@ const headers = [
     title: "Price",
   },
   {
+    key: "discountpercent",
+    title: "Discount Percentage",
+  },
+  {
+    key: "instock",
+    title: "In Stock",
+  },
+  {
+    key: "reorderlevel",
+    title: "Reorder Level",
+  },
+  {
     key: "createdAt",
     title: "Time",
   },
@@ -50,6 +62,9 @@ export default function Product() {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("0.00");
   const [description, setDescription] = useState("");
+  const [discountpercent, setDiscountpercent] = useState(0);
+  const [instock, setInstock] = useState(0);
+  const [reorderlevel, setReorderlevel] = useState(0);
   const [image, setImage] = useState("");
   const [products, setProducts] = useState([]);
   const [pagination, setPagination] = useState({
@@ -142,6 +157,9 @@ export default function Product() {
         price,
         image,
         description,
+        discountpercent,
+        instock,
+        reorderlevel,
       });
     } else {
       [err, response] = await http.post("/sayin/products", {
@@ -150,6 +168,9 @@ export default function Product() {
         price,
         image,
         description,
+        discountpercent,
+        instock,
+        reorderlevel,
       });
     }
 
@@ -178,6 +199,9 @@ export default function Product() {
     setPrice("0.00");
     setImage("");
     setDescription("");
+    setDiscountpercent(0);
+    setInstock(0);
+    setReorderlevel(0);
     setIsEdit(false);
   };
 
@@ -200,6 +224,9 @@ export default function Product() {
     setPrice(response.data.data.price);
     setDescription(response.data.data.description);
     setImage(`${host}/sayin${response.data.data.image}`);
+    setDiscountpercent(response.data.data.discountpercent);
+    setInstock(response.data.data.instock);
+    setReorderlevel(response.data.data.reorderlevel);
   };
 
   const handleEdit = (id) => {
@@ -437,6 +464,38 @@ export default function Product() {
                 onFilePicked={(f) => setImage(f.dataurl)}
               />
             </div>
+          </div>
+        </div>
+        <div className="flex mb-3 justify-between">
+          <div className="">
+            <div className="mb-2" style={{ fontSize: 14 }}>
+              Discount Percentage
+            </div>
+            <TextInput
+              type="number"
+              value={discountpercent}
+              onChange={(e) => setDiscountpercent(e.target.value)}
+            />
+          </div>
+          <div className="">
+            <div className="mb-2" style={{ fontSize: 14 }}>
+              In Stock
+            </div>
+            <TextInput
+              type="number"
+              value={instock}
+              onChange={(e) => setInstock(e.target.value)}
+            />
+          </div>
+          <div className="">
+            <div className="mb-2" style={{ fontSize: 14 }}>
+              Reorder Level
+            </div>
+            <TextInput
+              type="number"
+              value={reorderlevel}
+              onChange={(e) => setReorderlevel(e.target.value)}
+            />
           </div>
         </div>
         <div className="mb-3">
