@@ -150,12 +150,13 @@ export default function Product() {
     dispatch({ type: "SET_STATE", payload: { loading: true } });
     let err = null;
     let response = null;
+    const newImage = image.replace(`${host}/sayin`, "");
     if (isEdit && productId) {
       [err, response] = await http.put(`/sayin/products/${productId}`, {
         code,
         name,
         price,
-        image,
+        image: newImage,
         description,
         discountpercent,
         instock,
@@ -166,7 +167,7 @@ export default function Product() {
         code,
         name,
         price,
-        image,
+        image: newImage,
         description,
         discountpercent,
         instock,
