@@ -8,6 +8,23 @@ export default function ProductCard({
   reorderlevel,
   instock,
 }) {
+  const ProductStatus = () => {
+    if (instock <= 0) {
+      return (
+        <div className="bg-red-500 py-1 px-2 text-white rounded-xl text-sm">
+          Out of stock
+        </div>
+      );
+    } else if (instock <= reorderlevel) {
+      return (
+        <div className="bg-orange-500 py-1 px-2 text-white rounded-xl text-sm">
+          Only {instock} {instock > 1 ? "items" : "item"} left
+        </div>
+      );
+    }
+    return null;
+  };
+
   return (
     <div className="raised-rounded-card p-4 cursor-pointer" onClick={onClick}>
       <img
@@ -28,11 +45,7 @@ export default function ProductCard({
         <span className="text-lg" style={{ color: "#0285FF" }}>
           {nettprice} Ks
         </span>
-        {instock < reorderlevel ? (
-          <div className="bg-red-500 py-1 px-2 text-white rounded-xl text-sm">
-            Out of stock
-          </div>
-        ) : null}
+        <ProductStatus />
       </div>
     </div>
   );

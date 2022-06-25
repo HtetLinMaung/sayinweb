@@ -68,7 +68,7 @@ export default function NewInvoice() {
   };
 
   const addToCart = (product) => {
-    if (product.instock < product.reorderlevel) {
+    if (product.instock <= 0) {
       return Swal.fire({
         icon: "error",
         text: `${product.name} is out of stock!`,
