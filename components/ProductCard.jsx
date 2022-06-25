@@ -5,6 +5,8 @@ export default function ProductCard({
   price,
   onClick,
   nettprice,
+  reorderlevel,
+  instock,
 }) {
   return (
     <div className="raised-rounded-card p-4 cursor-pointer" onClick={onClick}>
@@ -22,8 +24,15 @@ export default function ProductCard({
       >
         {description}
       </div>
-      <div className="text-xl" style={{ color: "#0285FF" }}>
-        {nettprice} Ks
+      <div className="flex justify-between">
+        <span className="text-lg" style={{ color: "#0285FF" }}>
+          {nettprice} Ks
+        </span>
+        {instock < reorderlevel ? (
+          <div className="bg-red-500 py-1 px-2 text-white rounded-xl text-sm">
+            Out of stock
+          </div>
+        ) : null}
       </div>
     </div>
   );

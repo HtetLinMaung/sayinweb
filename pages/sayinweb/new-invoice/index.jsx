@@ -68,6 +68,12 @@ export default function NewInvoice() {
   };
 
   const addToCart = (product) => {
+    if (product.instock < product.reorderlevel) {
+      return Swal.fire({
+        icon: "error",
+        text: `${product.name} is out of stock!`,
+      });
+    }
     const p = items.find((item) => item._id == product._id);
     if (!p) {
       setItems([...items, { ...product, qty: 1, amount: product.price }]);
