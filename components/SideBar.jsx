@@ -10,10 +10,7 @@ export default function SideBar() {
     >
       <div></div>
       <ul className="md:py-16 px-16 md:px-0 h-20 flex md:flex-col flex-grow">
-        <li
-          className="flex justify-center mr-10 md:mr-0 md:mb-10"
-          title="Dashboard"
-        >
+        <li className="flex justify-center mr-10 md:mr-0 md:mb-10">
           <svg
             onClick={() => router.push("/sayinweb")}
             style={{
@@ -34,6 +31,39 @@ export default function SideBar() {
               d="M527.79 288H290.5l158.03 158.03c6.04 6.04 15.98 6.53 22.19.68 38.7-36.46 65.32-85.61 73.13-140.86 1.34-9.46-6.51-17.85-16.06-17.85zm-15.83-64.8C503.72 103.74 408.26 8.28 288.8.04 279.68-.59 272 7.1 272 16.24V240h223.77c9.14 0 16.82-7.68 16.19-16.8zM224 288V50.71c0-9.55-8.39-17.4-17.84-16.06C86.99 51.49-4.1 155.6.14 280.37 4.5 408.51 114.83 513.59 243.03 511.98c50.4-.63 96.97-16.87 135.26-44.03 7.9-5.6 8.42-17.23 1.57-24.08L224 288z"
               className="fa-primary"
             ></path>
+          </svg>
+        </li>
+        <li
+          className="flex justify-center items-center mr-10 md:mr-0 md:mb-10"
+          title="Category"
+        >
+          <svg
+            onClick={() => router.push("/sayinweb/category")}
+            style={{ width: "1.5rem" }}
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 2L6.5 11H17.5L12 2Z"
+              fill={
+                router.pathname == "/sayinweb/category" ? "#0285FF" : "#9A999B"
+              }
+            />
+            <path
+              d="M17.5 22C19.9853 22 22 19.9853 22 17.5C22 15.0147 19.9853 13 17.5 13C15.0147 13 13 15.0147 13 17.5C13 19.9853 15.0147 22 17.5 22Z"
+              fill={
+                router.pathname == "/sayinweb/category" ? "#0285FF" : "#9A999B"
+              }
+            />
+            <path
+              d="M3 13.5H11V21.5H3V13.5Z"
+              fill={
+                router.pathname == "/sayinweb/category" ? "#0285FF" : "#9A999B"
+              }
+            />
           </svg>
         </li>
         <li
@@ -159,6 +189,7 @@ export default function SideBar() {
             />
           </svg>
         </li>
+
         <li className="flex-grow"></li>
         <li className="flex justify-center items-center" title="Logout">
           <svg

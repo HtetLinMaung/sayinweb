@@ -36,7 +36,7 @@ export default function PriceInput({
             placeholder={placeholder}
             onBlur={toggleEditing}
             type="number"
-            className="outline-none py-3 px-6 rounded-xl h-full w-full placeholder:text-sm transition ease-in-out"
+            className="outline-none py-2 px-6 rounded-xl h-full w-full placeholder:text-sm transition ease-in-out"
             style={{ ...style, fontSize: 14 }}
           />
         ) : (
@@ -45,7 +45,7 @@ export default function PriceInput({
             readOnly
             value={money.format(value)}
             type="text"
-            className="outline-none py-3 px-6 rounded-xl h-full w-full placeholder:text-sm transition ease-in-out"
+            className="outline-none py-2 px-6 rounded-xl h-full w-full placeholder:text-sm transition ease-in-out"
             style={{ ...style, fontSize: 14 }}
           />
         )}

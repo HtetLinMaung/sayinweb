@@ -6,8 +6,12 @@ export default function Button({
   block = false,
   loading = false,
 }) {
-  const className = `text-white shadow-lg font-bold py-3 px-4 rounded-full  active:scale-90 transition ease-in-out ${
-    block ? "w-full" : "w-auto"
+  // const className = `text-white shadow-lg font-bold py-3 px-4 rounded-full  active:scale-90 transition ease-in-out ${
+  //   block ? "w-full" : "w-auto"
+  // } ${loading ? "cursor-not-allowed animate-bounce" : "cursor-pointer"}`;
+
+  const className = `btn shadow-lg rounded-full border-0 ${
+    block ? "btn-block" : ""
   } ${loading ? "cursor-not-allowed animate-bounce" : "cursor-pointer"}`;
 
   return (
@@ -16,6 +20,7 @@ export default function Button({
       className={className}
       style={{
         ...style,
+        textTransform: "none",
         backgroundColor: color ? color : "black",
         fontSize: 12,
       }}

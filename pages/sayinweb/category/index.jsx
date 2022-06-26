@@ -20,32 +20,11 @@ import { useRouter } from "next/router";
 import SelectDateButton from "../../../components/SelectDateButton";
 import SortButton from "../../../components/SortButton";
 import Checkbox from "../../../components/Checkbox";
-import MultiSelect from "../../../components/MultiSelect";
 
 const headers = [
   {
-    key: "code",
-    title: "Code",
-  },
-  {
     key: "name",
     title: "Name",
-  },
-  {
-    key: "price",
-    title: "Price",
-  },
-  {
-    key: "discountpercent",
-    title: "Discount Percentage",
-  },
-  {
-    key: "instock",
-    title: "In Stock",
-  },
-  {
-    key: "reorderlevel",
-    title: "Reorder Level",
   },
   {
     key: "createdAt",
@@ -53,23 +32,14 @@ const headers = [
   },
 ];
 
-export default function Product() {
+export default function Category() {
   const router = useRouter();
   const [state, dispatch] = useContext(appContext);
   const [isEdit, setIsEdit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [productId, setProductId] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [code, setCode] = useState("");
+  const [categoryId, setCategoryId] = useState(null);
   const [name, setName] = useState("");
-  const [price, setPrice] = useState("0.00");
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [description, setDescription] = useState("");
-  const [discountpercent, setDiscountpercent] = useState(0);
-  const [instock, setInstock] = useState(0);
-  const [reorderlevel, setReorderlevel] = useState(0);
-  const [image, setImage] = useState("");
-  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [pagination, setPagination] = useState({
     page: 1,
     perpage: 50,
@@ -93,17 +63,13 @@ export default function Product() {
   );
 
   useEffect(() => {
-    fetchProducts();
+    fetchCategories();
   }, [pagination.page, pagination.perpage, search]);
 
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  const fetchProducts = async () => {
-    setProducts([]);
+  const fetchCategories = async () => {
+    setCategories([]);
     dispatch({ type: "SET_STATE", payload: { loading: true } });
-    const [err, response] = await http.get("/sayin/products", {
+    const [err, response] = await http.get("/sayin/categories", {
       ...pagination,
       search,
       fromdate,
@@ -123,10 +89,9 @@ export default function Product() {
           "Something went wrong!",
       });
     }
-    setProducts(
+    setCategories(
       response.data.data.map((d) => ({
         ...d,
-        price: money.format(d.price),
         createdAt: moment(d.createdAt).format("DD/MM/YYYY, h:mm:ss a"),
       }))
     );
@@ -135,55 +100,25 @@ export default function Product() {
   };
 
   const handleSave = async () => {
-    if (!code) {
-      return Swal.fire({
-        icon: "warning",
-        text: "Please enter product's code!",
-      });
-    }
     if (!name) {
       return Swal.fire({
         icon: "warning",
-        text: "Please enter product's name!",
-      });
-    }
-    if (!price) {
-      return Swal.fire({
-        icon: "warning",
-        text: "Please enter product's price!",
+        text: "Please enter category's name!",
       });
     }
 
     dispatch({ type: "SET_STATE", payload: { loading: true } });
     let err = null;
     let response = null;
-    const newImage = image.replace(`${host}/sayin`, "");
-    if (isEdit && productId) {
-      [err, response] = await http.put(`/sayin/products/${productId}`, {
-        code,
+    if (isEdit && categoryId) {
+      [err, response] = await http.put(`/sayin/categories/${categoryId}`, {
         name,
-        price,
-        image: newImage,
-        description,
-        discountpercent,
-        instock,
-        reorderlevel,
-        categories: selectedCategories,
       });
     } else {
-      [err, response] = await http.post("/sayin/products", {
-        code,
+      [err, response] = await http.post("/sayin/categories", {
         name,
-        price,
-        image: newImage,
-        description,
-        discountpercent,
-        instock,
-        reorderlevel,
-        categories: selectedCategories,
       });
     }
-
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
       return Swal.fire({
@@ -199,26 +134,18 @@ export default function Product() {
       icon: "success",
       text: response.data.message,
     });
-    fetchProducts();
+    fetchCategories();
   };
 
   const handleCancel = () => {
     setOpen(false);
-    setCode("");
     setName("");
-    setPrice("0.00");
-    setImage("");
-    setSelectedCategories([]);
-    setDescription("");
-    setDiscountpercent(0);
-    setInstock(0);
-    setReorderlevel(0);
     setIsEdit(false);
   };
 
-  const fetchProductById = async (id) => {
+  const fetchCategoryById = async (id) => {
     dispatch({ type: "SET_STATE", payload: { loading: true } });
-    const [err, response] = await http.get(`/sayin/products/${id}`);
+    const [err, response] = await http.get(`/sayin/categories/${id}`);
     dispatch({ type: "SET_STATE", payload: { loading: false } });
     if (err) {
       return Swal.fire({
@@ -229,20 +156,12 @@ export default function Product() {
           "Something went wrong!",
       });
     }
-    setProductId(id);
-    setCode(response.data.data.code);
+    setCategoryId(id);
     setName(response.data.data.name);
-    setPrice(response.data.data.price);
-    setSelectedCategories(response.data.data.categories);
-    setDescription(response.data.data.description);
-    setImage(`${host}/sayin${response.data.data.image}`);
-    setDiscountpercent(response.data.data.discountpercent);
-    setInstock(response.data.data.instock);
-    setReorderlevel(response.data.data.reorderlevel);
   };
 
   const handleEdit = (id) => {
-    fetchProductById(id);
+    fetchCategoryById(id);
     setIsEdit(true);
     setOpen(true);
   };
@@ -259,7 +178,7 @@ export default function Product() {
     });
     if (result.value) {
       dispatch({ type: "SET_STATE", payload: { loading: true } });
-      const [err, response] = await http.delete(`/sayin/products/${id}`);
+      const [err, response] = await http.delete(`/sayin/categories/${id}`);
       dispatch({ type: "SET_STATE", payload: { loading: false } });
       if (err) {
         return Swal.fire({
@@ -274,7 +193,7 @@ export default function Product() {
         icon: "success",
         text: response.data.message,
       });
-      fetchProducts();
+      fetchCategories();
     }
   };
 
@@ -297,7 +216,7 @@ export default function Product() {
       icon: "success",
       text: response.data.message,
     });
-    fetchProducts();
+    fetchCategories();
   };
 
   const dateModalClear = () => {
@@ -324,33 +243,12 @@ export default function Product() {
       setDatelabel("Select Dates");
     }
     setDateModal(false);
-    fetchProducts();
+    fetchCategories();
   };
 
   const sortModalOk = () => {
     setSortModal(false);
-    fetchProducts();
-  };
-
-  const fetchCategories = async () => {
-    dispatch({ type: "SET_STATE", payload: { loading: true } });
-    const [err, response] = await http.get("/sayin/categories");
-    dispatch({ type: "SET_STATE", payload: { loading: false } });
-    if (err) {
-      return Swal.fire({
-        icon: "error",
-        text:
-          (err.response.data && err.response.data.message) ||
-          err.message ||
-          "Something went wrong!",
-      });
-    }
-    setCategories(
-      response.data.data.map((d) => ({
-        text: d.name,
-        value: d._id,
-      }))
-    );
+    fetchCategories();
   };
 
   return (
@@ -453,23 +351,14 @@ export default function Product() {
       <Modal
         open={open}
         minWidth={280}
-        width={650}
+        width={350}
         onOverlayClick={handleCancel}
       >
         <h1 className="font-bold mb-5 text-center" style={{ fontSize: 24 }}>
-          {!isEdit ? "Create New" : "Edit"} Product
+          {!isEdit ? "Create New" : "Edit"} Category
         </h1>
         <div className="flex">
-          <div className="w-2/3">
-            <div className="mb-3">
-              <div className="mb-2" style={{ fontSize: 14 }}>
-                Code
-              </div>
-              <TextInput
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-              />
-            </div>
+          <div className="flex-grow">
             <div className="mb-3">
               <div className="mb-2" style={{ fontSize: 14 }}>
                 Name
@@ -479,86 +368,15 @@ export default function Product() {
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
-            <div className="mb-3 w-2/3">
-              <div className="mb-2" style={{ fontSize: 14 }}>
-                Price
-              </div>
-              <PriceInput
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-              />
-            </div>
           </div>
-          <div className="w-1/2">
-            <div className="mb-3 flex justify-end pt-8">
-              <ImageUploader
-                size={200}
-                url={image}
-                onFilePicked={(f) => setImage(f.dataurl)}
-              />
-            </div>
-          </div>
-        </div>
-        <div className="flex mb-3 justify-between">
-          <div className="">
-            <div className="mb-2" style={{ fontSize: 14 }}>
-              Discount Percentage
-            </div>
-            <TextInput
-              type="number"
-              value={discountpercent}
-              onChange={(e) => setDiscountpercent(e.target.value)}
-            />
-          </div>
-          <div className="">
-            <div className="mb-2" style={{ fontSize: 14 }}>
-              In Stock
-            </div>
-            <TextInput
-              type="number"
-              value={instock}
-              onChange={(e) => setInstock(e.target.value)}
-            />
-          </div>
-          <div className="">
-            <div className="mb-2" style={{ fontSize: 14 }}>
-              Reorder Level
-            </div>
-            <TextInput
-              type="number"
-              value={reorderlevel}
-              onChange={(e) => setReorderlevel(e.target.value)}
-            />
-          </div>
-        </div>
-        <div className="mb-3">
-          <div className="mb-2" style={{ fontSize: 14 }}>
-            Category
-          </div>
-          <MultiSelect
-            items={categories}
-            value={selectedCategories}
-            onSelected={(selectedItems) => setSelectedCategories(selectedItems)}
-            placeholder="Select Category"
-          />
-        </div>
-        <div className="mb-3">
-          <div className="mb-2" style={{ fontSize: 14 }}>
-            Description
-          </div>
-          <TextArea
-            minHeight={150}
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
         </div>
         <div className="mt-10 flex justify-around">
-          <div className="w-1/4">
+          <div className="w-1/3">
             <Button block onClick={handleCancel}>
               Cancel
             </Button>
           </div>
-          <div className="w-1/4">
+          <div className="w-1/3">
             <Button block onClick={handleSave}>
               {isEdit ? "Update" : "Save"}
             </Button>
@@ -573,15 +391,15 @@ export default function Product() {
               to: "/sayinweb",
             },
             {
-              label: "Product",
-              to: "/sayinweb/product",
+              label: "Category",
+              to: "/sayinweb/category",
             },
           ]}
         />
       </div>
       <div className="flex flex-wrap mb-5">
         <div className="flex-grow"></div>
-        <div className="w-full sm:w-auto">
+        {/* <div className="w-full sm:w-auto">
           <DownloadButton
             label="Export"
             url={`${host}/sayin/products/export?token=${
@@ -598,8 +416,8 @@ export default function Product() {
             loading={upoloadLoading}
             onFilePicked={handleImport}
           />
-        </div>
-        <Button onClick={() => setOpen(true)}>Add Product</Button>
+        </div> */}
+        <Button onClick={() => setOpen(true)}>Add Category</Button>
       </div>
       <div className="flex mb-5 items-center flex-wrap">
         <div className="w-full mb-3 md:w-auto md:mb-0">
@@ -664,16 +482,11 @@ export default function Product() {
         pagination={pagination}
         onPaginationChange={setPagination}
         headers={headers}
-        items={products}
+        items={categories}
         onEditClick={handleEdit}
         onDeleteClick={handleDelete}
         totalCounts={totalCounts}
-        countLabel="Product"
-        colStyles={{
-          price: {
-            textAlign: "right",
-          },
-        }}
+        countLabel="Category"
       ></Table>
     </div>
   );

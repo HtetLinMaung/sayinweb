@@ -5,7 +5,7 @@ export default function Modal({
   onOverlayClick,
   width = 500,
 }) {
-  const className = `fixed flex justify-center items-center h-screen w-screen top-0 left-0 z-50 overflow-auto transition ease-in-out ${
+  const className = `fixed flex justify-center items-center h-screen w-screen top-0 left-0 z-50  transition ease-in-out ${
     !open ? "scale-0" : "scale-100"
   } `;
 
@@ -13,8 +13,8 @@ export default function Modal({
     <div className={className} onClick={onOverlayClick}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="raised-rounded-card rounded-2xl p-10 "
-        style={{ minWidth, width }}
+        className="raised-rounded-card rounded-2xl p-10 overflow-auto"
+        style={{ minWidth, width, maxHeight: "90%" }}
       >
         {children}
       </div>

@@ -62,6 +62,7 @@ export default function Login() {
         </p>
         <div className="mb-5">
           <TextInput
+            py="3"
             value={userid}
             onChange={(e) => setUserid(e.target.value)}
             placeholder="Enter Email / Phone No"
@@ -69,6 +70,7 @@ export default function Login() {
         </div>
         <div>
           <TextInput
+            py="3"
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 handleLogin();

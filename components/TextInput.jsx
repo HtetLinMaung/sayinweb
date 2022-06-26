@@ -5,7 +5,7 @@ export default function TextInput({
   onChange = () => {},
   type = "text",
   onKeyDown = () => {},
-  py = "3",
+  py = "2",
 }) {
   return (
     <div>

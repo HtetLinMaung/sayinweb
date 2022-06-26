@@ -155,8 +155,11 @@ export default function Table({
       </div>
       <div className="flex flex-wrap justify-end my-5">
         <div className="mr-0 sm:mr-4 py-2 mb-5 sm:mb-0 w-full sm:w-auto raised-rounded-card px-5 flex items-center justify-center">
-          {totalCounts} {countLabel}
-          {totalCounts > 1 && "s"}
+          {totalCounts}{" "}
+          {countLabel.endsWith("y") && totalCounts > 1
+            ? countLabel.slice(0, countLabel.length - 1)
+            : countLabel}
+          {totalCounts > 1 ? (countLabel.endsWith("y") ? "ies" : "s") : ""}
         </div>
         <div className="mb-5 sm:mb-0 w-full sm:px-4 sm:w-1/3 md:w-1/6 ">
           <div

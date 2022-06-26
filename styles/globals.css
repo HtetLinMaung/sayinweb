@@ -41,6 +41,9 @@ body::-webkit-scrollbar-thumb {
   padding: 6.5px;
 }
 .table th {
+  line-height: normal;
+  font-size: 1rem;
+  text-transform: none;
   background-color: #e2e8ed;
   padding: 6.5px;
   border-bottom: 2px solid black;
