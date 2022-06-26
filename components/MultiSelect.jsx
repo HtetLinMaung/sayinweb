@@ -12,6 +12,16 @@ export default function MultiSelect({
     setNewItems(items.map((item) => ({ ...item, checked: false })));
   }, [items]);
 
+  useEffect(() => {
+    if (!value.length) {
+      setNewItems(items.map((item) => ({ ...item, checked: false })));
+    } else {
+      setNewItems(
+        items.map((item) => ({ ...item, checked: value.includes(item.value) }))
+      );
+    }
+  }, [value]);
+
   return (
     <div className="dropdown w-full">
       <div
@@ -46,7 +56,7 @@ export default function MultiSelect({
                   onSelected(
                     newItems
                       .filter((item) => item.checked)
-                      .map((item) => item.key)
+                      .map((item) => item.value)
                   );
                 }}
               />

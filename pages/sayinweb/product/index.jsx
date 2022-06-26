@@ -573,7 +573,7 @@ export default function Product() {
               to: "/sayinweb",
             },
             {
-              label: "Product",
+              label: "Stock",
               to: "/sayinweb/product",
             },
           ]}

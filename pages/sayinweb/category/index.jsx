@@ -27,6 +27,10 @@ const headers = [
     title: "Name",
   },
   {
+    key: "total",
+    title: "Stocks",
+  },
+  {
     key: "createdAt",
     title: "Time",
   },
@@ -92,6 +96,7 @@ export default function Category() {
     setCategories(
       response.data.data.map((d) => ({
         ...d,
+        total: d.products.length,
         createdAt: moment(d.createdAt).format("DD/MM/YYYY, h:mm:ss a"),
       }))
     );
