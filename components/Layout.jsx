@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
 import ReactLoading from "react-loading";
 import { appContext } from "../providers/AppProvider";
+import { getSocket } from "../utils/socket";
 import SideBar from "./SideBar";
 
 export default function Layout({ children }) {
@@ -15,6 +16,16 @@ export default function Layout({ children }) {
       if (router.pathname == "/sayinweb/login") {
         router.push("/sayinweb");
       }
+      const socket = getSocket();
+      socket.on("connect", () => {
+        console.log("connected");
+        socket.emit("subscribe", token);
+        socket.on("token:refresh", (token) => {
+          console.log(token);
+          dispatch({ type: "SET_STATE", payload: { token } });
+          localStorage.setItem("token", token);
+        });
+      });
     } else {
       router.push("/sayinweb/login");
     }

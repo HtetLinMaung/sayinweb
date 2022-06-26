@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import { disconnectSocket } from "../utils/socket";
 
 export default function SideBar() {
   const router = useRouter();
@@ -195,6 +196,7 @@ export default function SideBar() {
           <svg
             onClick={() => {
               localStorage.setItem("token", "");
+              disconnectSocket();
               router.push("/sayinweb/login");
             }}
             style={{

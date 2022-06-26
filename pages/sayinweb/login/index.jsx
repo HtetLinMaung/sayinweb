@@ -5,6 +5,7 @@ import Button from "../../../components/Button";
 import TextInput from "../../../components/TextInput";
 import { appContext } from "../../../providers/AppProvider";
 import { http } from "../../../utils/http";
+import { getSocket } from "../../../utils/socket";
 
 export default function Login() {
   const router = useRouter();
@@ -45,6 +46,12 @@ export default function Login() {
       type: "SET_STATE",
       payload: { token: response.data.data.token },
     });
+
+    const socket = getSocket();
+    setTimeout(() => {
+      socket.emit("subscribe", response.data.data.token);
+    }, 1000);
+
     router.push("/sayinweb");
   };
 
