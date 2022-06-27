@@ -20,6 +20,7 @@ import { useRouter } from "next/router";
 import SelectDateButton from "../../../components/SelectDateButton";
 import SortButton from "../../../components/SortButton";
 import Checkbox from "../../../components/Checkbox";
+import { getSocket } from "../../../utils/socket";
 
 const headers = [
   {
@@ -33,6 +34,10 @@ const headers = [
   {
     key: "createdAt",
     title: "Time",
+  },
+  {
+    key: "creatername",
+    title: "Created By",
   },
 ];
 
@@ -70,6 +75,13 @@ export default function Category() {
     fetchCategories();
   }, [pagination.page, pagination.perpage, search]);
 
+  useEffect(() => {
+    const socket = getSocket();
+    socket.on("Category:create", fetchCategories);
+    socket.on("Category:update", fetchCategories);
+    socket.on("Category:delete", fetchCategories);
+  }, []);
+
   const fetchCategories = async () => {
     setCategories([]);
     dispatch({ type: "SET_STATE", payload: { loading: true } });
@@ -97,6 +109,7 @@ export default function Category() {
       response.data.data.map((d) => ({
         ...d,
         total: d.products.length,
+        creatername: d.createdby.name,
         createdAt: moment(d.createdAt).format("DD/MM/YYYY, h:mm:ss a"),
       }))
     );

@@ -21,6 +21,7 @@ import SelectDateButton from "../../../components/SelectDateButton";
 import SortButton from "../../../components/SortButton";
 import Checkbox from "../../../components/Checkbox";
 import MultiSelect from "../../../components/MultiSelect";
+import { getSocket } from "../../../utils/socket";
 
 const headers = [
   {
@@ -98,6 +99,14 @@ export default function Product() {
 
   useEffect(() => {
     fetchCategories();
+    const socket = getSocket();
+    socket.on("Product:create", fetchProducts);
+    socket.on("Product:update", fetchProducts);
+    socket.on("Product:delete", fetchProducts);
+
+    socket.on("Category:create", fetchCategories);
+    socket.on("Category:update", fetchCategories);
+    socket.on("Category:delete", fetchCategories);
   }, []);
 
   const fetchProducts = async () => {

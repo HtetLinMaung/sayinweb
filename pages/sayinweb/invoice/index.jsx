@@ -17,6 +17,7 @@ import TextInput from "../../../components/TextInput";
 import Modal from "../../../components/Modal";
 import Checkbox from "../../../components/Checkbox";
 import SortButton from "../../../components/SortButton";
+import { getSocket } from "../../../utils/socket";
 
 const headers = [
   {
@@ -78,6 +79,11 @@ export default function Invoice() {
   useEffect(() => {
     fetchInvoices();
   }, [pagination.page, pagination.perpage, search]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    socket.on("Invoice:create", fetchInvoices);
+  }, []);
 
   const fetchInvoices = async () => {
     setInvoices([]);

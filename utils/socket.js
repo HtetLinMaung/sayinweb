@@ -19,3 +19,7 @@ export const disconnectSocket = () => {
   socket.disconnect();
   socket = null;
 };
+
+export const isSocketConnected = () => {
+  return socket && socket.connected;
+};

@@ -10,6 +10,7 @@ import RaisedInput from "../../../components/RaisedInput";
 import IconButton from "../../../components/IconButton";
 import Button from "../../../components/Button";
 import EditablePrice from "../../../components/EditableText";
+import { getSocket } from "../../../utils/socket";
 
 export default function NewInvoice() {
   const [state, dispatch] = useContext(appContext);
@@ -22,6 +23,13 @@ export default function NewInvoice() {
   useEffect(() => {
     fetchProducts();
   }, [search]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    socket.on("Product:create", fetchProducts);
+    socket.on("Product:update", fetchProducts);
+    socket.on("Product:delete", fetchProducts);
+  }, []);
 
   const fetchProducts = async () => {
     dispatch({ type: "SET_STATE", payload: { loading: true } });
