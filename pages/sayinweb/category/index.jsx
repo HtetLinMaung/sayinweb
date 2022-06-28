@@ -47,7 +47,12 @@ export default function Category() {
 
   useEffect(() => {
     fetchCategories();
-  }, [pagination.page, pagination.perpage, search]);
+  }, [
+    pagination.page,
+    pagination.perpage,
+    search,
+    state.sortItems["Category"],
+  ]);
 
   useEffect(() => {
     const socket = getSocket();

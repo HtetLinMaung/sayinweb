@@ -42,7 +42,13 @@ export default function Sale() {
     if (router.isReady) {
       fetchSales();
     }
-  }, [pagination.page, pagination.perpage, search, router.query]);
+  }, [
+    pagination.page,
+    pagination.perpage,
+    search,
+    router.query,
+    state.sortItems["Sale"],
+  ]);
 
   const fetchSales = async () => {
     setSales([]);

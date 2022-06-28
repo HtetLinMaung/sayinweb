@@ -57,7 +57,7 @@ export default function Product() {
 
   useEffect(() => {
     fetchProducts();
-  }, [pagination.page, pagination.perpage, search]);
+  }, [pagination.page, pagination.perpage, search, state.sortItems["Product"]]);
 
   useEffect(() => {
     fetchCategories();

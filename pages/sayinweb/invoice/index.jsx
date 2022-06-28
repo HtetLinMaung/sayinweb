@@ -40,7 +40,7 @@ export default function Invoice() {
 
   useEffect(() => {
     fetchInvoices();
-  }, [pagination.page, pagination.perpage, search]);
+  }, [pagination.page, pagination.perpage, search, state.sortItems["Invoice"]]);
 
   useEffect(() => {
     const socket = getSocket();
