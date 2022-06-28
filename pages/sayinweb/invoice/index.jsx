@@ -19,37 +19,6 @@ import Checkbox from "../../../components/Checkbox";
 import SortButton from "../../../components/SortButton";
 import { getSocket } from "../../../utils/socket";
 
-const headers = [
-  {
-    key: "invoiceid",
-    title: "Invoice ID",
-  },
-  {
-    key: "discount",
-    title: "Discount",
-  },
-  {
-    key: "tax",
-    title: "Tax",
-  },
-  {
-    key: "subtotal",
-    title: "Total",
-  },
-  {
-    key: "total",
-    title: "Nett",
-  },
-  {
-    key: "paymentmethod",
-    title: "Payment Method",
-  },
-  {
-    key: "createdAt",
-    title: "Time",
-  },
-];
-
 export default function Invoice() {
   const router = useRouter();
   const [state, dispatch] = useContext(appContext);
@@ -68,13 +37,6 @@ export default function Invoice() {
   const [todate, setTodate] = useState("");
   const [grandtotal, setGrandtotal] = useState("0.00");
   const [sortModal, setSortModal] = useState(false);
-  const [sortItems, setSortItems] = useState(
-    headers.map((header) => ({
-      ...header,
-      order: header.key == "createdAt" ? "desc" : "asc",
-      checked: header.key == "createdAt" ? true : false,
-    }))
-  );
 
   useEffect(() => {
     fetchInvoices();
@@ -93,7 +55,7 @@ export default function Invoice() {
       search,
       fromdate,
       todate,
-      sort: sortItems
+      sort: state.sortItems["Invoice"]
         .filter((si) => si.checked)
         .map((si) => `${si.key}:${si.order}`)
         .join(","),
@@ -111,6 +73,7 @@ export default function Invoice() {
     setInvoices(
       response.data.data.map((d) => ({
         ...d,
+        creatername: d.createdby.name,
         total: money.format(d.total),
         discount: money.format(d.discount),
         tax: money.format(d.tax),
@@ -186,30 +149,30 @@ export default function Invoice() {
         onOverlayClick={sortModalOk}
       >
         <ul>
-          {sortItems.map((item) => (
+          {state.sortItems["Invoice"].map((item) => (
             <li key={item.key} className="flex items-center mb-3">
               <Checkbox
                 checked={item.checked}
-                onChange={(e) =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key ? { ...si, checked: !si.checked } : si
-                    )
-                  )
-                }
+                onChange={(e) => {
+                  const m = { ...state.sortItems };
+                  m["Invoice"] = m["Invoice"].map((si) =>
+                    si.key == item.key ? { ...si, checked: !si.checked } : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
               />
               <span className="ml-3">{item.title}</span>
               <div className="flex-grow"></div>
               <svg
-                onClick={() =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key
-                        ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
-                        : si
-                    )
-                  )
-                }
+                onClick={() => {
+                  const m = { ...state.sortItems };
+                  m["Invoice"] = m["Invoice"].map((si) =>
+                    si.key == item.key
+                      ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
+                      : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fal"
@@ -295,7 +258,9 @@ export default function Invoice() {
             label="Export"
             url={`${host}/sayin/invoices/export?token=${
               state.token
-            }&search=${search}&fromdate=${fromdate}&todate=${todate}&sort=${sortItems
+            }&search=${search}&fromdate=${fromdate}&todate=${todate}&sort=${state.sortItems[
+              "Invoice"
+            ]
               .filter((si) => si.checked)
               .map((si) => `${si.key}:${si.order}`)
               .join(",")}`}
@@ -380,7 +345,7 @@ export default function Invoice() {
         hideAction
         pagination={pagination}
         onPaginationChange={setPagination}
-        headers={headers}
+        headers={state.moduleheaders["Invoice"]}
         items={invoices}
         totalCounts={totalCounts}
         countLabel="Invoice"

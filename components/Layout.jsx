@@ -1,13 +1,72 @@
 import { useRouter } from "next/router";
 import { useContext, useEffect } from "react";
 import ReactLoading from "react-loading";
+import Swal from "sweetalert2";
 import { appContext } from "../providers/AppProvider";
+import { http } from "../utils/http";
 import { getSocket } from "../utils/socket";
 import SideBar from "./SideBar";
 
 export default function Layout({ children }) {
   const router = useRouter();
   const [state, dispatch] = useContext(appContext);
+
+  const fetchModulePermissions = async () => {
+    const modulepermissions = localStorage.getItem("modulepermissions");
+    if (modulepermissions) {
+      dispatch({
+        type: "SET_STATE",
+        payload: { modulepermissions: JSON.parse(modulepermissions) },
+      });
+    }
+    dispatch({
+      type: "SET_STATE",
+      payload: { loading: true },
+    });
+    const [err, response] = await http.get("/sayin/auth/module-permissions");
+    dispatch({
+      type: "SET_STATE",
+      payload: { loading: false },
+    });
+    if (err) {
+      return Swal.fire({
+        icon: "error",
+        text:
+          (err.response.data && err.response.data.message) ||
+          err.message ||
+          "Something went wrong!",
+      });
+    }
+
+    const moduleheaders = {};
+    const sortItems = {};
+    for (const mp of response.data.data) {
+      moduleheaders[mp.module.name] = mp.tableheaders;
+      sortItems[mp.module.name] = mp.tableheaders.map((header) => ({
+        ...header,
+        order: header.key == "createdAt" ? "desc" : "asc",
+        checked: header.key == "createdAt" ? true : false,
+      }));
+    }
+    dispatch({
+      type: "SET_STATE",
+      payload: {
+        modulepermissions: response.data.data,
+        moduleheaders,
+        sortItems,
+      },
+    });
+    localStorage.setItem(
+      "modulepermissions",
+      JSON.stringify(response.data.data)
+    );
+  };
+
+  useEffect(() => {
+    if (state.token) {
+      fetchModulePermissions();
+    }
+  }, [state.token]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -16,6 +75,7 @@ export default function Layout({ children }) {
       if (router.pathname == "/sayinweb/login") {
         router.push("/sayinweb");
       }
+
       const socket = getSocket();
       socket.on("connect", () => {
         console.log("connected");

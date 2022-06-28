@@ -22,25 +22,6 @@ import SortButton from "../../../components/SortButton";
 import Checkbox from "../../../components/Checkbox";
 import { getSocket } from "../../../utils/socket";
 
-const headers = [
-  {
-    key: "name",
-    title: "Name",
-  },
-  {
-    key: "total",
-    title: "Stocks",
-  },
-  {
-    key: "createdAt",
-    title: "Time",
-  },
-  {
-    key: "creatername",
-    title: "Created By",
-  },
-];
-
 export default function Category() {
   const router = useRouter();
   const [state, dispatch] = useContext(appContext);
@@ -63,13 +44,6 @@ export default function Category() {
   const [fromdate, setFromdate] = useState("");
   const [todate, setTodate] = useState("");
   const [sortModal, setSortModal] = useState(false);
-  const [sortItems, setSortItems] = useState(
-    headers.map((header) => ({
-      ...header,
-      order: header.key == "createdAt" ? "desc" : "asc",
-      checked: header.key == "createdAt" ? true : false,
-    }))
-  );
 
   useEffect(() => {
     fetchCategories();
@@ -90,7 +64,7 @@ export default function Category() {
       search,
       fromdate,
       todate,
-      sort: sortItems
+      sort: state.sortItems["Category"]
         .filter((si) => si.checked)
         .map((si) => `${si.key}:${si.order}`)
         .join(","),
@@ -278,30 +252,30 @@ export default function Category() {
         onOverlayClick={sortModalOk}
       >
         <ul>
-          {sortItems.map((item) => (
+          {state.sortItems["Category"].map((item) => (
             <li key={item.key} className="flex items-center mb-3">
               <Checkbox
                 checked={item.checked}
-                onChange={(e) =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key ? { ...si, checked: !si.checked } : si
-                    )
-                  )
-                }
+                onChange={(e) => {
+                  const m = { ...state.sortItems };
+                  m["Category"] = m["Category"].map((si) =>
+                    si.key == item.key ? { ...si, checked: !si.checked } : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
               />
               <span className="ml-3">{item.title}</span>
               <div className="flex-grow"></div>
               <svg
-                onClick={() =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key
-                        ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
-                        : si
-                    )
-                  )
-                }
+                onClick={() => {
+                  const m = { ...state.sortItems };
+                  m["Category"] = m["Category"].map((si) =>
+                    si.key == item.key
+                      ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
+                      : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fal"
@@ -499,7 +473,7 @@ export default function Category() {
       <Table
         pagination={pagination}
         onPaginationChange={setPagination}
-        headers={headers}
+        headers={state.moduleheaders["Category"]}
         items={categories}
         onEditClick={handleEdit}
         onDeleteClick={handleDelete}

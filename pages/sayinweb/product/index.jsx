@@ -23,37 +23,6 @@ import Checkbox from "../../../components/Checkbox";
 import MultiSelect from "../../../components/MultiSelect";
 import { getSocket } from "../../../utils/socket";
 
-const headers = [
-  {
-    key: "code",
-    title: "Code",
-  },
-  {
-    key: "name",
-    title: "Name",
-  },
-  {
-    key: "price",
-    title: "Price",
-  },
-  {
-    key: "discountpercent",
-    title: "Discount Percentage",
-  },
-  {
-    key: "instock",
-    title: "In Stock",
-  },
-  {
-    key: "reorderlevel",
-    title: "Reorder Level",
-  },
-  {
-    key: "createdAt",
-    title: "Time",
-  },
-];
-
 export default function Product() {
   const router = useRouter();
   const [state, dispatch] = useContext(appContext);
@@ -85,13 +54,6 @@ export default function Product() {
   const [fromdate, setFromdate] = useState("");
   const [todate, setTodate] = useState("");
   const [sortModal, setSortModal] = useState(false);
-  const [sortItems, setSortItems] = useState(
-    headers.map((header) => ({
-      ...header,
-      order: header.key == "createdAt" ? "desc" : "asc",
-      checked: header.key == "createdAt" ? true : false,
-    }))
-  );
 
   useEffect(() => {
     fetchProducts();
@@ -117,7 +79,7 @@ export default function Product() {
       search,
       fromdate,
       todate,
-      sort: sortItems
+      sort: state.sortItems["Product"]
         .filter((si) => si.checked)
         .map((si) => `${si.key}:${si.order}`)
         .join(","),
@@ -135,6 +97,7 @@ export default function Product() {
     setProducts(
       response.data.data.map((d) => ({
         ...d,
+        creatername: d.createdby.name,
         price: money.format(d.price),
         createdAt: moment(d.createdAt).format("DD/MM/YYYY, h:mm:ss a"),
       }))
@@ -371,30 +334,30 @@ export default function Product() {
         onOverlayClick={sortModalOk}
       >
         <ul>
-          {sortItems.map((item) => (
+          {state.sortItems["Product"].map((item) => (
             <li key={item.key} className="flex items-center mb-3">
               <Checkbox
                 checked={item.checked}
-                onChange={(e) =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key ? { ...si, checked: !si.checked } : si
-                    )
-                  )
-                }
+                onChange={(e) => {
+                  const m = { ...state.sortItems };
+                  m["Product"] = m["Product"].map((si) =>
+                    si.key == item.key ? { ...si, checked: !si.checked } : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
               />
               <span className="ml-3">{item.title}</span>
               <div className="flex-grow"></div>
               <svg
-                onClick={() =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key
-                        ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
-                        : si
-                    )
-                  )
-                }
+                onClick={() => {
+                  const m = { ...state.sortItems };
+                  m["Product"] = m["Product"].map((si) =>
+                    si.key == item.key
+                      ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
+                      : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fal"
@@ -595,7 +558,7 @@ export default function Product() {
             label="Export"
             url={`${host}/sayin/products/export?token=${
               state.token
-            }&search=${search}&sort=${sortItems
+            }&search=${search}&sort=${state.sortItems["Product"]
               .filter((si) => si.checked)
               .map((si) => `${si.key}:${si.order}`)
               .join(",")}&fromdate=${fromdate}&todate=${todate}`}
@@ -672,7 +635,7 @@ export default function Product() {
       <Table
         pagination={pagination}
         onPaginationChange={setPagination}
-        headers={headers}
+        headers={state.moduleheaders["Product"]}
         items={products}
         onEditClick={handleEdit}
         onDeleteClick={handleDelete}

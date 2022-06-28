@@ -18,37 +18,6 @@ import TextInput from "../../../components/TextInput";
 import SortButton from "../../../components/SortButton";
 import Checkbox from "../../../components/Checkbox";
 
-const headers = [
-  {
-    key: "productcode",
-    title: "Product Code",
-  },
-  {
-    key: "productname",
-    title: "Product Name",
-  },
-  {
-    key: "qty",
-    title: "Qty",
-  },
-  {
-    key: "price",
-    title: "Price",
-  },
-  {
-    key: "amount",
-    title: "Subtotal",
-  },
-  {
-    key: "invoiceid",
-    title: "Invoice ID",
-  },
-  {
-    key: "createdAt",
-    title: "Time",
-  },
-];
-
 export default function Sale() {
   const router = useRouter();
   const [state, dispatch] = useContext(appContext);
@@ -68,13 +37,6 @@ export default function Sale() {
   const [fromdate, setFromdate] = useState("");
   const [todate, setTodate] = useState("");
   const [sortModal, setSortModal] = useState(false);
-  const [sortItems, setSortItems] = useState(
-    headers.map((header) => ({
-      ...header,
-      order: header.key == "createdAt" ? "desc" : "asc",
-      checked: header.key == "createdAt" ? true : false,
-    }))
-  );
 
   useEffect(() => {
     if (router.isReady) {
@@ -91,7 +53,7 @@ export default function Sale() {
       invoiceid: "invoiceid" in router.query ? router.query.invoiceid : "",
       fromdate,
       todate,
-      sort: sortItems
+      sort: state.sortItems["Sale"]
         .filter((si) => si.checked)
         .map((si) => `${si.key}:${si.order}`)
         .join(","),
@@ -109,6 +71,7 @@ export default function Sale() {
     setSales(
       response.data.data.map((d) => ({
         ...d,
+        creatername: d.createdby.name,
         createdAt: moment(d.createdAt).format("DD/MM/YYYY, h:mm:ss a"),
       }))
     );
@@ -181,30 +144,30 @@ export default function Sale() {
         onOverlayClick={sortModalOk}
       >
         <ul>
-          {sortItems.map((item) => (
+          {state.sortItems["Sale"].map((item) => (
             <li key={item.key} className="flex items-center mb-3">
               <Checkbox
                 checked={item.checked}
-                onChange={(e) =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key ? { ...si, checked: !si.checked } : si
-                    )
-                  )
-                }
+                onChange={(e) => {
+                  const m = { ...state.sortItems };
+                  m["Sale"] = m["Sale"].map((si) =>
+                    si.key == item.key ? { ...si, checked: !si.checked } : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
               />
               <span className="ml-3">{item.title}</span>
               <div className="flex-grow"></div>
               <svg
-                onClick={() =>
-                  setSortItems(
-                    sortItems.map((si) =>
-                      si.key == item.key
-                        ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
-                        : si
-                    )
-                  )
-                }
+                onClick={() => {
+                  const m = { ...state.sortItems };
+                  m["Sale"] = m["Sale"].map((si) =>
+                    si.key == item.key
+                      ? { ...si, order: si.order == "asc" ? "desc" : "asc" }
+                      : si
+                  );
+                  dispatch({ type: "SET_STATE", payload: { sortItems: m } });
+                }}
                 aria-hidden="true"
                 focusable="false"
                 data-prefix="fal"
@@ -309,7 +272,7 @@ export default function Sale() {
               state.token
             }&search=${search}&invoiceid=${
               "invoiceid" in router.query ? router.query.invoiceid : ""
-            }&sort=${sortItems
+            }&sort=${state.sortItems["Sale"]
               .filter((si) => si.checked)
               .map((si) => `${si.key}:${si.order}`)
               .join(",")}&fromdate=${fromdate}&todate=${todate}`}
@@ -398,7 +361,7 @@ export default function Sale() {
         hideAction
         pagination={pagination}
         onPaginationChange={setPagination}
-        headers={headers}
+        headers={state.moduleheaders["Sale"]}
         items={sales}
         totalCounts={totalCounts}
         countLabel="Item"

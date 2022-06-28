@@ -44,7 +44,9 @@ export default function Login() {
     localStorage.setItem("token", response.data.data.token);
     dispatch({
       type: "SET_STATE",
-      payload: { token: response.data.data.token },
+      payload: {
+        token: response.data.data.token,
+      },
     });
 
     const socket = getSocket();
